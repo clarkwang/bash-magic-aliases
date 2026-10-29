@@ -25,7 +25,8 @@ function _quote()
     str="$2"
 
     printf -v ret '%q' "$str"
-    if [[ $ret == "$str" || $ret == "\$'"* ]]; then
+    # Bash 3.2's %q can leave expansion-prone tildes (~) unquoted.
+    if [[ ( $ret == "$str" && $str != *'~'* ) || $ret == "\$'"* ]]; then
         local "$1" && _uplevel -u "$1" "$1="'"$1"' "$ret"
         return
     fi
